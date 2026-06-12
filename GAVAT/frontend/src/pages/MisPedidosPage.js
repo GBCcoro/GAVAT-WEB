@@ -31,14 +31,17 @@ const MisPedidosPage = () => {
     setLoading(true);
     try {
       const response = await pedidoService.getMisPedidos();
-      if (response.success) {
-        setPedidos(response.data.pedidos || response.data || []);
-      } else {
+      if (response.success === false) {
         setMensaje({ tipo: 'danger', texto: response.message || 'Error al cargar pedidos' });
+        setPedidos([]);
+      } else {
+        const pedidosData = response.data?.pedidos || response.data || response || [];
+        setPedidos(Array.isArray(pedidosData) ? pedidosData : []);
       }
     } catch (error) {
       console.error('Error al cargar pedidos:', error);
       setMensaje({ tipo: 'danger', texto: 'Error al cargar los pedidos' });
+      setPedidos([]);
     } finally {
       setLoading(false);
     }
@@ -77,6 +80,7 @@ const MisPedidosPage = () => {
   const getEstadoTexto = (estado) => {
     const textos = {
       'pendiente': 'Pendiente',
+      'pagado': 'Pagado',
       'confirmado': 'Confirmado',
       'en_proceso': 'En Proceso',
       'enviado': 'Enviado',

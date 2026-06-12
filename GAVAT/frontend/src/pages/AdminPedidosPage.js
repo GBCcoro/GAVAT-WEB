@@ -71,8 +71,8 @@ function AdminPedidosPage() {
     return pedidos.filter(pedido => {
       if (filtros.busqueda) {
         const busqueda = filtros.busqueda.toLowerCase();
-        const nombreCliente = pedido.Usuario?.nombre?.toLowerCase() || '';
-        const emailCliente = pedido.Usuario?.email?.toLowerCase() || '';
+        const nombreCliente = pedido.usuario?.nombre?.toLowerCase() || '';
+        const emailCliente = pedido.usuario?.email?.toLowerCase() || '';
         if (!nombreCliente.includes(busqueda) && !emailCliente.includes(busqueda)) return false;
       }
       if (filtros.estado !== 'todos' && pedido.estado !== filtros.estado) return false;
@@ -198,7 +198,7 @@ function AdminPedidosPage() {
                 pedidosPaginados.map(pedido => (
                   <tr key={pedido.id}>
                     <td>#{pedido.id}</td>
-                    <td>{pedido.Usuario?.nombre || 'Usuario desconocido'}<br/><small className="text-muted">{pedido.Usuario?.email}</small></td>
+                    <td>{pedido.usuario?.nombre || 'Usuario desconocido'}<br/><small className="text-muted">{pedido.usuario?.email}</small></td>
                     <td>{formatearFecha(pedido.createdAt)}</td>
                     <td><strong>{formatearPrecio(pedido.total)}</strong></td>
                     <td><span className={`badge-estado-pedido ${pedido.estado}`}>{pedido.estado}</span></td>
@@ -253,7 +253,7 @@ function AdminPedidosPage() {
             </div>
             <div className="modal-body-custom">
               <div className="row mb-4">
-                <div className="col-md-6"><h6>Información del Cliente</h6><p><strong>Nombre:</strong> {pedidoSeleccionado.Usuario?.nombre}<br/><strong>Email:</strong> {pedidoSeleccionado.Usuario?.email}<br/><strong>Teléfono:</strong> {pedidoSeleccionado.telefono}</p></div>
+                <div className="col-md-6"><h6>Información del Cliente</h6><p><strong>Nombre:</strong> {pedidoSeleccionado.usuario?.nombre}<br/><strong>Email:</strong> {pedidoSeleccionado.usuario?.email}<br/><strong>Teléfono:</strong> {pedidoSeleccionado.telefono}</p></div>
                 <div className="col-md-6"><h6>Información del Pedido</h6><p><strong>Fecha:</strong> {formatearFecha(pedidoSeleccionado.createdAt)}<br/><strong>Estado:</strong> <span className={`badge-estado-pedido ${pedidoSeleccionado.estado}`}>{pedidoSeleccionado.estado}</span><br/><strong>Total:</strong> {formatearPrecio(pedidoSeleccionado.total)}</p></div>
               </div>
               <div className="mb-4"><h6>Dirección de Envío</h6><p>{pedidoSeleccionado.direccionEnvio}</p></div>

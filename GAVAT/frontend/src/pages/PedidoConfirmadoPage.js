@@ -32,10 +32,11 @@ const PedidoConfirmadoPage = () => {
     setLoading(true);
     try {
       const response = await pedidoService.getPedidoById(id);
-      if (response.success && response.data) {
-        setPedido(response.data.pedido || response.data);
-      } else {
+      if (response.success === false) {
         setMensaje({ tipo: 'danger', texto: response.message || 'Error al cargar el pedido' });
+      } else {
+        const pedidoData = response.data?.pedido || response.data || response;
+        setPedido(pedidoData);
       }
     } catch (error) {
       console.error('Error al cargar pedido:', error);
@@ -78,6 +79,7 @@ const PedidoConfirmadoPage = () => {
   const getEstadoTexto = (estado) => {
     const textos = {
       'pendiente': 'Pendiente',
+      'pagado': 'Pagado',
       'confirmado': 'Confirmado',
       'en_proceso': 'En Proceso',
       'enviado': 'Enviado',

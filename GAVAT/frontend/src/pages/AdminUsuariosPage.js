@@ -10,6 +10,7 @@ function AdminUsuariosPage() {
   const [usuarioActual, setUsuarioActual] = useState({
     id: null,
     nombre: '',
+    apellido: '',
     email: '',
     password: '',
     telefono: '',
@@ -63,7 +64,7 @@ function AdminUsuariosPage() {
       limpiarFormulario();
       cargarUsuarios();
     } catch (error) {
-      alert(error.response?.data?.mensaje || 'Error al guardar usuario');
+      alert(error.response?.data?.message || 'Error al guardar usuario');
     }
   };
 
@@ -85,16 +86,8 @@ function AdminUsuariosPage() {
   };
 
   const handleToggleActivo = async (usuario) => {
-    const nuevoEstado = !usuario.activo;
     try {
-      await usuarioService.actualizarUsuario(usuario.id, {
-        nombre: usuario.nombre,
-        email: usuario.email,
-        telefono: usuario.telefono,
-        direccion: usuario.direccion,
-        rol: usuario.rol,
-        activo: nuevoEstado
-      });
+      await usuarioService.cambiarEstado(usuario.id);
       cargarUsuarios();
     } catch (error) {
       alert('Error al cambiar estado del usuario');
@@ -105,6 +98,7 @@ function AdminUsuariosPage() {
     setUsuarioActual({
       id: null,
       nombre: '',
+      apellido: '',
       email: '',
       password: '',
       telefono: '',
@@ -308,12 +302,17 @@ function AdminUsuariosPage() {
             <form onSubmit={handleSubmit}>
               <div className="modal-body-custom">
                 <div className="row">
-                  <div className="col-md-6 mb-3">
+                  <div className="col-md-4 mb-3">
                     <label className="form-label fw-bold">Nombre *</label>
                     <input type="text" className="admin-input w-100" value={usuarioActual.nombre}
                       onChange={(e) => setUsuarioActual({...usuarioActual, nombre: e.target.value})} required />
                   </div>
-                  <div className="col-md-6 mb-3">
+                  <div className="col-md-4 mb-3">
+                    <label className="form-label fw-bold">Apellido *</label>
+                    <input type="text" className="admin-input w-100" value={usuarioActual.apellido}
+                      onChange={(e) => setUsuarioActual({...usuarioActual, apellido: e.target.value})} required />
+                  </div>
+                  <div className="col-md-4 mb-3">
                     <label className="form-label fw-bold">Email *</label>
                     <input type="email" className="admin-input w-100" value={usuarioActual.email}
                       onChange={(e) => setUsuarioActual({...usuarioActual, email: e.target.value})} required />

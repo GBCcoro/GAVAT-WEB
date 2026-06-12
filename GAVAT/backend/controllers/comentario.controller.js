@@ -578,6 +578,70 @@ const obtenerComentariosPorUsuario = async (req, res) => {
   }
 };
 
+/**
+ * Obtener todos los comentarios - ADMIN
+ *
+ * Ruta: GET /api/admin/comentarios
+ * Query params: pagina, limite
+ */
+const obtenerTodosComentarios = async (req, res) => {
+  try {
+    const pagina = parseInt(req.query.pagina, 10) || 1;
+    const limite = Math.min(parseInt(req.query.limite, 10) || 20, 50);
+    const offset = (pagina - 1) * limite;
+
+    const { count, rows: comentarios } = await Comentario.findAndCountAll({
+      include: [
+        {
+          model: Usuario,
+          as: 'usuario',
+          attributes: ['id', 'nombre', 'email']
+        },
+        {
+          model: Producto,
+          as: 'producto',
+          attributes: ['id', 'nombre']
+        }
+      ],
+      order: [['fecha', 'DESC']],
+      limit: limite,
+      offset,
+      distinct: true
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        comentarios: comentarios.map(c => ({
+          id: c.id,
+          usuarioId: c.usuarioId,
+          usuario: c.usuario?.nombre || null,
+          email: c.usuario?.email || null,
+          productoId: c.productoId,
+          producto: c.producto?.nombre || null,
+          comentario: c.comentario,
+          calificacion: c.calificacion,
+          estado: c.estado ? 'visible' : 'no_visible',
+          fecha: c.fecha
+        })),
+        paginacion: {
+          paginaActual: pagina,
+          totalPaginas: Math.ceil(count / limite),
+          totalComentarios: count,
+          comentariosPorPagina: limite
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error en obtenerTodosComentarios:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener todos los comentarios',
+      error: error.message
+    });
+  }
+};
+
 // =============================================
 // EXPORTACIÓN DE FUNCIONES
 // =============================================
@@ -589,5 +653,6 @@ module.exports = {
   moderarComentario,            // PUT /api/admin/comentarios/:comentarioId/moderar
   toggleComentario,             // PATCH /api/admin/comentarios/:comentarioId/toggle
   eliminarComentario,           // DELETE /api/admin/comentarios/:comentarioId
+  obtenerTodosComentarios,      // GET /api/admin/comentarios
   obtenerComentariosPorUsuario // GET /api/admin/comentarios/usuario/:usuarioId
 };

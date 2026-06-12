@@ -221,7 +221,7 @@ const actualizarUsuario = async (req, res) => {
     }
     
     // VALIDACIÓN: Si se envía rol, debe ser válido
-    if (rol && !['cliente', 'administrador'].includes(rol)) {
+    if (rol && !['cliente', 'auxiliar', 'administrador'].includes(rol)) {
       return res.status(400).json({
         success: false,
         message: 'Rol inválido'

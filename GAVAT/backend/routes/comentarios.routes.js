@@ -25,6 +25,7 @@ const {
   moderarComentario,
   toggleComentario,
   eliminarComentario,
+  obtenerTodosComentarios,
   obtenerComentariosPorUsuario
 } = require('../controllers/comentario.controller');
 
@@ -88,6 +89,13 @@ router.patch('/admin/comentarios/:comentarioId/toggle', verificarAuth, esAdminis
  * Eliminar un comentario
  */
 router.delete('/admin/comentarios/:comentarioId', verificarAuth, esAdministrador, eliminarComentario);
+
+/**
+ * GET /api/admin/comentarios
+ * Lista todos los comentarios de todos los usuarios.
+ * Query params opcionales: pagina, limite
+ */
+router.get('/admin/comentarios', verificarAuth, esAdministrador, obtenerTodosComentarios);
 
 /**
  * GET /api/admin/comentarios/usuario/:usuarioId

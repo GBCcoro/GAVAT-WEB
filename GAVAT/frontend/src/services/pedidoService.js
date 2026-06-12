@@ -31,7 +31,7 @@ const pedidoService = {
   getMisPedidos: async () => {
     try {
       const response = await api.get('/cliente/pedidos');
-      return response.data.data?.pedidos || response.data.pedidos || response.data;
+      return response.data;
     } catch (error) {
       throw error.response?.data || { success: false, message: 'Error de conexión' };
     }
