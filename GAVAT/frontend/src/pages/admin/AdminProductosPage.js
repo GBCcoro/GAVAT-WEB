@@ -11,20 +11,26 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { getImageUrl } from '../../utils/helpers';
 import { exportarProductosAPDF, exportarProductosAExcel } from '../../utils/exportUtils';
 
 // Componente memoizado para imágenes de productos
 const ProductImage = memo(({ imagen, nombre }) => {
-  const [imgSrc, setImgSrc] = useState(imagen || '/producto-default.jpg');
+  const [imgSrc, setImgSrc] = useState(() => getImageUrl(imagen));
   const hasError = useRef(false);
-  
+
+  useEffect(() => {
+    hasError.current = false;
+    setImgSrc(getImageUrl(imagen));
+  }, [imagen]);
+
   const handleImageError = useCallback(() => {
     if (!hasError.current) {
       hasError.current = true;
       setImgSrc('/producto-default.jpg');
     }
   }, []);
-  
+
   return (
     <img
       src={imgSrc}
@@ -47,6 +53,8 @@ const AdminProductosPage = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editando, setEditando] = useState(null);
+  const [imagenArchivo, setImagenArchivo] = useState(null);
+  const [previewImagen, setPreviewImagen] = useState('');
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
   const [tipoExportacion, setTipoExportacion] = useState('pdf');
   
@@ -66,7 +74,6 @@ const AdminProductosPage = () => {
     stock: '',
     categoriaId: '',
     subcategoriaId: '',
-    imagen: '',
     activo: true
   });
   
@@ -161,9 +168,10 @@ const AdminProductosPage = () => {
         stock: producto.stock,
         categoriaId: producto.categoriaId,
         subcategoriaId: producto.subcategoriaId || '',
-        imagen: producto.imagen || '',
         activo: producto.activo
       });
+      setImagenArchivo(null);
+      setPreviewImagen(producto.imagen ? getImageUrl(producto.imagen) : '/producto-default.jpg');
     } else {
       setEditando(null);
       setFormData({
@@ -173,9 +181,10 @@ const AdminProductosPage = () => {
         stock: '',
         categoriaId: '',
         subcategoriaId: '',
-        imagen: '',
         activo: true
       });
+      setImagenArchivo(null);
+      setPreviewImagen('');
     }
     setShowModal(true);
   };
@@ -190,9 +199,10 @@ const AdminProductosPage = () => {
       stock: '',
       categoriaId: '',
       subcategoriaId: '',
-      imagen: '',
       activo: true
     });
+    setImagenArchivo(null);
+    setPreviewImagen('');
   };
 
   const handleChange = (e) => {
@@ -203,25 +213,48 @@ const AdminProductosPage = () => {
     });
   };
 
+  const handleImagenChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setImagenArchivo(file);
+
+    if (file) {
+      setPreviewImagen(URL.createObjectURL(file));
+    } else if (editando?.imagen) {
+      setPreviewImagen(getImageUrl(editando.imagen));
+    } else {
+      setPreviewImagen('/producto-default.jpg');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
-      const dataToSend = {
-        ...formData,
-        precio: parseFloat(formData.precio),
-        stock: parseInt(formData.stock),
-        subcategoriaId: formData.subcategoriaId || null
-      };
+      const formDataToSend = new FormData();
+      formDataToSend.append('nombre', formData.nombre);
+      formDataToSend.append('descripcion', formData.descripcion || '');
+      formDataToSend.append('precio', String(parseFloat(formData.precio)));
+      formDataToSend.append('stock', String(parseInt(formData.stock, 10)));
+      formDataToSend.append('categoriaId', String(formData.categoriaId));
+      formDataToSend.append('subcategoriaId', formData.subcategoriaId || '');
+      formDataToSend.append('activo', String(formData.activo));
+
+      if (imagenArchivo) {
+        formDataToSend.append('imagen', imagenArchivo);
+      }
 
       if (editando) {
-        await api.put(`/admin/productos/${editando.id}`, dataToSend);
+        await api.put(`/admin/productos/${editando.id}`, formDataToSend, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         setMensaje({ tipo: 'success', texto: 'Producto actualizado exitosamente' });
       } else {
-        await api.post('/admin/productos', dataToSend);
+        await api.post('/admin/productos', formDataToSend, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         setMensaje({ tipo: 'success', texto: 'Producto creado exitosamente' });
       }
-      
+
       handleCloseModal();
       loadData();
     } catch (error) {
@@ -669,14 +702,27 @@ const AdminProductosPage = () => {
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>URL de Imagen</Form.Label>
+                  <Form.Label>Imagen del producto</Form.Label>
                   <Form.Control
-                    type="text"
-                    name="imagen"
-                    value={formData.imagen}
-                    onChange={handleChange}
-                    placeholder="https://ejemplo.com/imagen.jpg"
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/gif"
+                    onChange={handleImagenChange}
                   />
+                  {previewImagen && (
+                    <div className="mt-3 border rounded p-2 bg-light text-center">
+                      <img
+                        src={previewImagen}
+                        alt="Vista previa del producto"
+                        style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '0.75rem' }}
+                        onError={(e) => {
+                          e.target.src = '/producto-default.jpg';
+                        }}
+                      />
+                    </div>
+                  )}
+                  <Form.Text className="text-muted">
+                    Si no eliges una nueva imagen, se mantendrá la actual.
+                  </Form.Text>
                 </Form.Group>
               </Col>
             </Row>

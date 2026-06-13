@@ -30,7 +30,7 @@
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 2rem;
-  --gradient-gold: linear-gradient(135deg, var(--bs-gold), var(--bs-gold-dark));
+  --gradient-gold: linear-gradient(135deg, #9a6b2d 0%, #6d4a1c 45%, #3d2810 100%);
   --gradient-positive-negative: linear-gradient(135deg, var(--bg-positiva), var(--bg-negativo));
 }
 
@@ -46,9 +46,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hero Section Mejorado (ahora con degradado dorado) */
+/* Hero Section Mejorado (ahora con degradado dorado más oscuro) */
 .hero-section {
-  background: var(--gradient-gold);
+  background: linear-gradient(135deg, #9a6b2d 0%, #6d4a1c 45%, #3d2810 100%);
   position: relative;
   overflow: hidden;
 }
