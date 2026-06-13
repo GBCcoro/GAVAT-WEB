@@ -20,18 +20,22 @@ const AdminDashboardPage = () => {
     productos: 0,
     usuarios: 0,
     pedidos: 0,
-    pedidosPendientes: 0
+    pedidosPendientes: 0,
+    facturas: 0,
+    comentarios: 0
   });
 
   const loadStats = useCallback(async () => {
     try {
       // Obtener estadísticas básicas
-      const [categorias, subcategorias, productos, usuarios, pedidos] = await Promise.all([
+      const [categorias, subcategorias, productos, usuarios, pedidos, facturas, comentarios] = await Promise.all([
         api.get('/admin/categorias'),
         api.get('/admin/subcategorias'),
         api.get('/admin/productos'),
         api.get('/admin/usuarios'),
-        api.get('/admin/pedidos')
+        api.get('/admin/pedidos'),
+        api.get('/admin/facturas'),
+        api.get('/admin/comentarios')
       ]);
 
       // Extraer los datos de cada respuesta
@@ -40,6 +44,8 @@ const AdminDashboardPage = () => {
       const productosData = productos.data?.data?.productos || productos.data?.productos || productos.data?.data || [];
       const usuariosData = usuarios.data.data?.usuarios || usuarios.data.usuarios || [];
       const pedidosData = pedidos.data.data?.pedidos || pedidos.data.pedidos || [];
+      const facturasData = facturas.data.data?.facturas || facturas.data.facturas || [];
+      const comentariosData = comentarios.data.data?.comentarios || comentarios.data.comentarios || [];
       
       const pedidosPendientes = Array.isArray(pedidosData) 
         ? pedidosData.filter(p => p.estado === 'pendiente').length 
@@ -51,7 +57,9 @@ const AdminDashboardPage = () => {
         productos: Array.isArray(productosData) ? productosData.length : 0,
         usuarios: usuariosData.length || 0,
         pedidos: pedidosData.length || 0,
-        pedidosPendientes: pedidosPendientes
+        pedidosPendientes: pedidosPendientes,
+        facturas: Array.isArray(facturasData) ? facturasData.length : 0,
+        comentarios: Array.isArray(comentariosData) ? comentariosData.length : 0
       });
     } catch (error) {
       console.error('Error al cargar estadísticas:', error);
@@ -111,6 +119,22 @@ const AdminDashboardPage = () => {
       icon: 'bi-clock-history',
       color: 'danger',
       link: '/admin/pedidos?estado=pendiente',
+      show: true
+    },
+    {
+      title: 'Facturas',
+      value: stats.facturas,
+      icon: 'bi-file-earmark-pdf',
+      color: 'info',
+      link: '/admin/facturas',
+      show: isAdmin
+    },
+    {
+      title: 'Comentarios',
+      value: stats.comentarios,
+      icon: 'bi-chat-dots',
+      color: 'success',
+      link: '/admin/comentarios',
       show: true
     }
   ];

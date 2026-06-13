@@ -60,11 +60,19 @@ const NavigationBar = memo(() => {
                     <NavDropdown.Item as={Link} to="/admin/usuarios">
                       Usuarios
                     </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/admin/facturas">
+                      <i className="bi bi-file-earmark-pdf me-2"></i>
+                      Facturas
+                    </NavDropdown.Item>
                   </>
                 )}
                 <NavDropdown.Divider />
                 <NavDropdown.Item as={Link} to="/admin/pedidos">
                   Pedidos
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/admin/comentarios">
+                  <i className="bi bi-chat-dots me-2"></i>
+                  Comentarios
                 </NavDropdown.Item>
               </NavDropdown>
             )}

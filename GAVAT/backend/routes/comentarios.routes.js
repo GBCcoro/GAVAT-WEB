@@ -31,7 +31,7 @@ const {
 
 // Importa middlewares de autenticación
 const { verificarAuth } = require('../middleware/auth');
-const { esAdministrador } = require('../middleware/checkRole');
+const { esAdminOAuxiliar } = require('../middleware/checkRole');
 
 /**
  * RUTAS CLIENTE (requieren autenticación)
@@ -76,31 +76,31 @@ router.get('/catalogo/productos/:productoId/comentarios', obtenerComentariosProd
  * Moderar un comentario (visible o no_visible)
  * Body: { estado: 'visible' | 'no_visible' } o { visible: true | false }
  */
-router.put('/admin/comentarios/:comentarioId/moderar', verificarAuth, esAdministrador, moderarComentario);
+router.put('/admin/comentarios/:comentarioId/moderar', verificarAuth, esAdminOAuxiliar, moderarComentario);
 
 /**
  * PATCH /api/admin/comentarios/:comentarioId/toggle
  * Alterna la visibilidad del comentario.
  */
-router.patch('/admin/comentarios/:comentarioId/toggle', verificarAuth, esAdministrador, toggleComentario);
+router.patch('/admin/comentarios/:comentarioId/toggle', verificarAuth, esAdminOAuxiliar, toggleComentario);
 
 /**
  * DELETE /api/admin/comentarios/:comentarioId
  * Eliminar un comentario
  */
-router.delete('/admin/comentarios/:comentarioId', verificarAuth, esAdministrador, eliminarComentario);
+router.delete('/admin/comentarios/:comentarioId', verificarAuth, esAdminOAuxiliar, eliminarComentario);
 
 /**
  * GET /api/admin/comentarios
  * Lista todos los comentarios de todos los usuarios.
  * Query params opcionales: pagina, limite
  */
-router.get('/admin/comentarios', verificarAuth, esAdministrador, obtenerTodosComentarios);
+router.get('/admin/comentarios', verificarAuth, esAdminOAuxiliar, obtenerTodosComentarios);
 
 /**
  * GET /api/admin/comentarios/usuario/:usuarioId
  * Busca comentarios creados por un usuario específico.
  */
-router.get('/admin/comentarios/usuario/:usuarioId', verificarAuth, esAdministrador, obtenerComentariosPorUsuario);
+router.get('/admin/comentarios/usuario/:usuarioId', verificarAuth, esAdminOAuxiliar, obtenerComentariosPorUsuario);
 
 module.exports = router;

@@ -10,6 +10,8 @@ import { Container, Card, Table, Badge, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import pedidoService from '../services/pedidoService';
+import adminService from '../services/adminService';
+import api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const MisPedidosPage = () => {
@@ -90,6 +92,45 @@ const MisPedidosPage = () => {
     return textos[estado] || estado;
   };
 
+  const handleDescargarFactura = async (pedidoId) => {
+    try {
+      // Paso 1: Obtener la factura del pedido para conseguir el numeroFactura
+      const responseFactura = await api.get(`/cliente/pedidos/${pedidoId}/factura`);
+      
+      if (!responseFactura.data?.success || !responseFactura.data?.data?.numeroFactura) {
+        setMensaje({ tipo: 'danger', texto: 'No se encontró factura para este pedido' });
+        return;
+      }
+      
+      const numeroFactura = responseFactura.data.data.numeroFactura;
+      
+      // Paso 2: Descargar el PDF usando el numeroFactura
+      const responsePDF = await api.get(`/cliente/facturas/${numeroFactura}/descargar`, {
+        responseType: 'blob'
+      });
+      
+      // Crear un blob y descargar
+      const blob = new Blob([responsePDF.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${numeroFactura}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      
+      setMensaje({ tipo: 'success', texto: 'Factura descargada exitosamente' });
+    } catch (error) {
+      console.error('Error al descargar factura:', error);
+      if (error.response?.status === 404) {
+        setMensaje({ tipo: 'danger', texto: 'No hay factura disponible para este pedido' });
+      } else {
+        setMensaje({ tipo: 'danger', texto: 'Error al descargar la factura' });
+      }
+    }
+  };
+
   if (loading) {
     return <LoadingSpinner message="Cargando pedidos..." />;
   }
@@ -165,10 +206,22 @@ const MisPedidosPage = () => {
                         className="btn-ver-detalle"
                         size="sm"
                         onClick={() => navigate(`/pedido-confirmado/${pedido.id}`)}
+                        title="Ver detalles del pedido"
                       >
                         <i className="bi bi-eye me-1"></i>
                         Ver Detalle
                       </Button>
+                      {pedido.estado === 'pagado' && (
+                        <Button
+                          className="btn-descargar ms-2"
+                          size="sm"
+                          onClick={() => handleDescargarFactura(pedido.id)}
+                          title="Descargar factura en PDF"
+                        >
+                          <i className="bi bi-download me-1"></i>
+                          Factura
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -256,6 +309,20 @@ const MisPedidosPage = () => {
         .btn-ver-detalle:hover {
           background: var(--bs-gold, #f5c271);
           color: var(--fnt-black, #000000);
+          transform: translateY(-1px);
+        }
+        .btn-descargar {
+          background: transparent;
+          border: 2px solid var(--bs-success, #2d8659);
+          color: var(--bs-success, #2d8659);
+          border-radius: 0.75rem;
+          padding: 0.375rem 0.75rem;
+          font-weight: 500;
+          transition: all 0.3s ease;
+        }
+        .btn-descargar:hover {
+          background: var(--bs-success, #2d8659);
+          color: var(--fnt-white, #ffffff);
           transform: translateY(-1px);
         }
         /* Ajuste para badges de estado (Bootstrap mantiene sus colores semánticos) */

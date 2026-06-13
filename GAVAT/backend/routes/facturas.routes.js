@@ -69,6 +69,12 @@ router.get('/admin/facturas', verificarAuth, esAdministrador, facturaController.
 router.get('/admin/facturas/:id', verificarAuth, esAdministrador, facturaController.verDetalleFactura);
 
 /**
+ * GET /api/admin/facturas/:numeroFactura/descargar
+ * Descargar el PDF de una factura (admin)
+ */
+router.get('/admin/facturas/:numeroFactura/descargar', verificarAuth, esAdministrador, facturaController.descargarFacturaPDFAdmin);
+
+/**
  * PUT /api/admin/facturas/:id/anular
  * Anular una factura (cambiar estado a 'anulada')
  * Body: { motivo: string }

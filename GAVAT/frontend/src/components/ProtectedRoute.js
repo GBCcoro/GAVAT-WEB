@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const ProtectedRoute = ({ children, requireAdmin = false }) => {
+const ProtectedRoute = ({ children, requireAdmin = false, adminOnly = false }) => {
   const { user, loading, isAdmin, isAuxiliar } = useAuth();
 
   // Mientras carga, mostrar loading con estilos personalizados
@@ -40,6 +40,11 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
 
   // Si requiere admin y no es admin ni auxiliar
   if (requireAdmin && !isAdmin && !isAuxiliar) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Si requiere admin solo (no auxiliar)
+  if (adminOnly && !isAdmin) {
     return <Navigate to="/" replace />;
   }
 

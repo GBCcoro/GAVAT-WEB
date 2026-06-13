@@ -34,6 +34,10 @@ const HomePage = () => {
     }
   };
 
+  const handleVerCatalogo = () => {
+    navigate('/catalogo');
+  };
+
   return (
     <>
       {/* Hero Section con degradado dorado */}
@@ -50,13 +54,14 @@ const HomePage = () => {
               </p>
 
               <div className="hero-actions d-flex flex-wrap gap-3 mb-4">
-                <Link 
-                  to="/catalogo"
+                <button 
+                  onClick={handleVerCatalogo}
                   className="btn btn-hero-primary"
+                  type="button"
                 >
                   <i className="bi bi-grid me-2"></i>
                   Ver Catálogo
-                </Link>
+                </button>
                 {!isAuthenticated && (
                   <Link 
                     to="/register"

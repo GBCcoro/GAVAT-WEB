@@ -17,6 +17,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CatalogoPage from './pages/CatalogoPage';
+import ProductoDetallePage from './pages/ProductoDetallePage';
 import CarritoPage from './pages/CarritoPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PedidoConfirmadoPage from './pages/PedidoConfirmadoPage';
@@ -27,6 +28,8 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminCategoriasPage from './pages/admin/AdminCategoriasPage';
 import AdminSubcategoriasPage from './pages/admin/AdminSubcategoriasPage';
 import AdminProductosPage from './pages/admin/AdminProductosPage';
+import AdminFacturasPage from './pages/admin/AdminFacturasPage';
+import AdminComentariosPage from './pages/admin/AdminComentariosPage';
 import AdminUsuariosPage from './pages/AdminUsuariosPage';
 import AdminPedidosPage from './pages/AdminPedidosPage';
 
@@ -47,6 +50,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/catalogo" element={<CatalogoPage />} />
+              <Route path="/producto/:id" element={<ProductoDetallePage />} />
               <Route path="/carrito" element={<CarritoPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/pedido-confirmado/:id" element={<PedidoConfirmadoPage />} />
@@ -76,6 +80,16 @@ function App() {
               <Route path="/admin/productos" element={
                 <ProtectedRoute requireAdmin={true}>
                   <AdminProductosPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/facturas" element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminFacturasPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/comentarios" element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminComentariosPage />
                 </ProtectedRoute>
               } />
               <Route path="/admin/usuarios" element={

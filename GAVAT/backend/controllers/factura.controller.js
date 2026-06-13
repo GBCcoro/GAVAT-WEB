@@ -362,7 +362,28 @@ exports.verDetalleFactura = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: factura
+      data: {
+        id: factura.id,
+        numeroFactura: factura.numeroFactura,
+        fechaEmision: factura.fechaEmision,
+        clienteNombre: factura.clienteNombre,
+        clienteEmail: factura.clienteEmail,
+        clienteDocumento: factura.clienteDocumento,
+        direccionEnvio: factura.direccionEnvio,
+        telefonoEnvio: factura.telefonoEnvio,
+        subtotal: factura.subtotal,
+        impuesto: factura.impuesto,
+        total: factura.total,
+        metodoPago: factura.metodoPago,
+        referenciaPago: factura.referenciaPago,
+        estado: factura.estado,
+        rutaPDF: factura.rutaPDF,
+        detalles: factura.detalles,
+        notas: factura.notas,
+        pedido: factura.pedido,
+        createdAt: factura.createdAt,
+        updatedAt: factura.updatedAt
+      }
     });
 
   } catch (error) {
@@ -417,9 +438,14 @@ exports.listarFacturasAdmin = async (req, res) => {
           fechaEmision: f.fechaEmision,
           clienteNombre: f.clienteNombre,
           clienteEmail: f.clienteEmail,
+          direccionEnvio: f.direccionEnvio,
+          telefonoEnvio: f.telefonoEnvio,
+          subtotal: f.subtotal,
+          impuesto: f.impuesto,
           total: f.total,
+          metodoPago: f.metodoPago,
           estado: f.estado,
-          pedidoEstado: f.pedido.estado
+          pedidoEstado: f.pedido?.estado
         }))
       }
     });
@@ -480,6 +506,59 @@ exports.anularFactura = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al anular la factura',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Descargar PDF de la factura (admin)
+ * GET /api/admin/facturas/:numeroFactura/descargar
+ */
+exports.descargarFacturaPDFAdmin = async (req, res) => {
+  try {
+    const { numeroFactura } = req.params;
+
+    // Verificar que la factura existe
+    const factura = await Factura.findOne({
+      where: { numeroFactura }
+    });
+
+    if (!factura) {
+      return res.status(404).json({
+        success: false,
+        message: 'Factura no encontrada'
+      });
+    }
+
+    if (!factura.rutaPDF) {
+      return res.status(400).json({
+        success: false,
+        message: 'El PDF de esta factura no está disponible'
+      });
+    }
+
+    // Obtener el buffer del PDF
+    const pdfBuffer = await obtenerBufferFactura(numeroFactura);
+
+    // Enviar el PDF al cliente
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="factura-${numeroFactura}.pdf"`);
+    res.send(pdfBuffer);
+
+  } catch (error) {
+    console.error('Error descargando factura (admin):', error);
+    
+    if (error.code === 'ENOENT') {
+      return res.status(404).json({
+        success: false,
+        message: 'Archivo de factura no encontrado'
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Error al descargar la factura',
       error: error.message
     });
   }
