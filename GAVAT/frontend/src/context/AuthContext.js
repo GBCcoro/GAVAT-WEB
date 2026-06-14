@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error('Error sincronizando carrito:', error);
       }
-    }, 100);
+    }, 500);
     
     return response;
   }, []);
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error('Error sincronizando carrito:', error);
       }
-    }, 100);
+    }, 500);
     
     return response;
   }, []);

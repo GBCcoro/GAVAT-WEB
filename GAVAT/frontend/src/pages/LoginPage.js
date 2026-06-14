@@ -33,14 +33,16 @@ const LoginPage = () => {
     try {
       const response = await login(email, password);
       
-      if (response.data.usuario.rol === 'cliente') {
-        navigate('/catalogo');
-      } else if (response.data.usuario.rol === 'administrador' || response.data.usuario.rol === 'auxiliar') {
-        navigate('/admin/dashboard');
-      }
+      // Dar tiempo a React de actualizar el estado antes de navegar
+      setTimeout(() => {
+        if (response.data.usuario.rol === 'cliente') {
+          navigate('/catalogo');
+        } else if (response.data.usuario.rol === 'administrador' || response.data.usuario.rol === 'auxiliar') {
+          navigate('/admin/dashboard');
+        }
+      }, 200);
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión');
-    } finally {
       setLoading(false);
     }
   };

@@ -69,10 +69,13 @@ const RegisterPage = () => {
     try {
       const { confirmPassword, ...userData } = formData;
       await register(userData);
-      navigate('/catalogo');
+      
+      // Dar tiempo a React de actualizar el estado antes de navegar
+      setTimeout(() => {
+        navigate('/catalogo');
+      }, 200);
     } catch (err) {
       setError(err.message || 'Error al registrarse');
-    } finally {
       setLoading(false);
     }
   };

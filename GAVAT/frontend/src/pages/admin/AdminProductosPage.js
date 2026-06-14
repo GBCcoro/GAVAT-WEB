@@ -166,7 +166,7 @@ const AdminProductosPage = () => {
         descripcion: producto.descripcion || '',
         precio: producto.precio,
         stock: producto.stock,
-        categoriaId: producto.categoriaId,
+        categoriaId: producto.categoriaId || '',
         subcategoriaId: producto.subcategoriaId || '',
         activo: producto.activo
       });
@@ -207,9 +207,16 @@ const AdminProductosPage = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let finalValue = value;
+    
+    // Convertir a número para los campos de ID
+    if ((name === 'categoriaId' || name === 'subcategoriaId') && value !== '') {
+      finalValue = parseInt(value, 10);
+    }
+    
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : finalValue
     });
   };
 
@@ -656,13 +663,13 @@ const AdminProductosPage = () => {
                   <Form.Label>Categoría <span className="text-danger">*</span></Form.Label>
                   <Form.Select
                     name="categoriaId"
-                    value={formData.categoriaId}
+                    value={String(formData.categoriaId)}
                     onChange={handleChange}
                     required
                   >
                     <option value="">Seleccionar categoría...</option>
                     {categorias.filter(c => c.activo).map((cat) => (
-                      <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                      <option key={cat.id} value={String(cat.id)}>{cat.nombre}</option>
                     ))}
                   </Form.Select>
                 </Form.Group>
@@ -672,13 +679,13 @@ const AdminProductosPage = () => {
                   <Form.Label>Subcategoría</Form.Label>
                   <Form.Select
                     name="subcategoriaId"
-                    value={formData.subcategoriaId}
+                    value={String(formData.subcategoriaId)}
                     onChange={handleChange}
                     disabled={!formData.categoriaId}
                   >
                     <option value="">Seleccionar subcategoría...</option>
                     {subcategoriasFiltradas.filter(s => s.activo).map((sub) => (
-                      <option key={sub.id} value={sub.id}>{sub.nombre}</option>
+                      <option key={sub.id} value={String(sub.id)}>{sub.nombre}</option>
                     ))}
                   </Form.Select>
                 </Form.Group>

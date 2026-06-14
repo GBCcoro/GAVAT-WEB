@@ -30,7 +30,7 @@
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 2rem;
-  --gradient-gold: linear-gradient(135deg, #9a6b2d 0%, #6d4a1c 45%, #3d2810 100%);
+  --gradient-gold: linear-gradient(135deg, var(--bs-gold), var(--bs-gold-dark));
   --gradient-positive-negative: linear-gradient(135deg, var(--bg-positiva), var(--bg-negativo));
 }
 
@@ -46,9 +46,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hero Section Mejorado (ahora con degradado dorado más oscuro) */
+/* Hero Section Mejorado (ahora con degradado dorado) */
 .hero-section {
-  background: linear-gradient(135deg, #9a6b2d 0%, #6d4a1c 45%, #3d2810 100%);
+  background: var(--gradient-gold);
   position: relative;
   overflow: hidden;
 }
@@ -381,6 +381,8 @@ img {
 .page-title-icon {
   background: linear-gradient(135deg, var(--bs-gold), var(--bs-gold-dark));
   -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: transparent;
 }
 

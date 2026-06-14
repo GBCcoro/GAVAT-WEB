@@ -27,8 +27,8 @@ const AdminDashboardPage = () => {
 
   const loadStats = useCallback(async () => {
     try {
-      // Obtener estadísticas básicas
-      const [categorias, subcategorias, productos, usuarios, pedidos, facturas, comentarios] = await Promise.all([
+      // Obtener estadísticas básicas - Manejar errores individuales
+      const results = await Promise.allSettled([
         api.get('/admin/categorias'),
         api.get('/admin/subcategorias'),
         api.get('/admin/productos'),
@@ -38,14 +38,87 @@ const AdminDashboardPage = () => {
         api.get('/admin/comentarios')
       ]);
 
+      // Extraer datos de cada respuesta, ignorando los 403
+      const extractData = (result, index) => {
+        if (result.status === 'rejected') {
+          // Si falla por 403 (no autorizado), retornar array vacío
+          if (result.reason?.response?.status === 403) {
+            return [];
+          }
+          console.error(`Error en request ${index}:`, result.reason);
+          return [];
+        }
+        return result.value.data || [];
+      };
+
+      const [categorias, subcategorias, productos, usuarios, pedidos, facturas, comentarios] = results;
+
       // Extraer los datos de cada respuesta
-      const categoriasData = categorias.data?.data?.categorias || categorias.data?.categorias || categorias.data?.data || [];
-      const subcategoriasData = subcategorias.data?.data?.subcategorias || subcategorias.data?.subcategorias || subcategorias.data?.data || [];
-      const productosData = productos.data?.data?.productos || productos.data?.productos || productos.data?.data || [];
-      const usuariosData = usuarios.data.data?.usuarios || usuarios.data.usuarios || [];
-      const pedidosData = pedidos.data.data?.pedidos || pedidos.data.pedidos || [];
-      const facturasData = facturas.data.data?.facturas || facturas.data.facturas || [];
-      const comentariosData = comentarios.data.data?.comentarios || comentarios.data.comentarios || [];
+      const getCategorias = (data) => {
+        if (Array.isArray(data)) return data;
+        if (data?.data?.categorias) return data.data.categorias;
+        if (data?.categorias) return data.categorias;
+        if (data?.data) return data.data;
+        return [];
+      };
+
+      const getSubcategorias = (data) => {
+        if (Array.isArray(data)) return data;
+        if (data?.data?.subcategorias) return data.data.subcategorias;
+        if (data?.subcategorias) return data.subcategorias;
+        if (data?.data) return data.data;
+        return [];
+      };
+
+      const getProductos = (data) => {
+        if (Array.isArray(data)) return data;
+        if (data?.data?.productos) return data.data.productos;
+        if (data?.productos) return data.productos;
+        if (data?.data) return data.data;
+        return [];
+      };
+
+      const getUsuarios = (data) => {
+        if (Array.isArray(data)) return data;
+        if (data?.data?.usuarios) return data.data.usuarios;
+        if (data?.usuarios) return data.usuarios;
+        if (data?.data) return data.data;
+        return [];
+      };
+
+      const getPedidos = (data) => {
+        if (Array.isArray(data)) return data;
+        if (data?.data?.pedidos) return data.data.pedidos;
+        if (data?.pedidos) return data.pedidos;
+        if (data?.data) return data.data;
+        return [];
+      };
+
+      const getFacturas = (data) => {
+        if (Array.isArray(data)) return data;
+        if (data?.data?.facturas) return data.data.facturas;
+        if (data?.facturas) return data.facturas;
+        if (data?.data) return data.data;
+        return [];
+      };
+
+      const getComentarios = (data) => {
+        if (Array.isArray(data)) return data;
+        if (data?.data?.comentarios) return data.data.comentarios;
+        if (data?.comentarios) return data.comentarios;
+        if (data?.data) return data.data;
+        return [];
+      };
+
+      const categoriasData = getCategorias(extractData(categorias, 0));
+      const subcategoriasData = getSubcategorias(extractData(subcategorias, 1));
+      const productosData = getProductos(extractData(productos, 2));
+      const usuariosData = getUsuarios(extractData(usuarios, 3));
+      const pedidosData = getPedidos(extractData(pedidos, 4));
+      const facturasData = getFacturas(extractData(facturas, 5));
+      const comentariosData = getComentarios(extractData(comentarios, 6));
+      
+      console.log('Datos extraídos:', { categoriasData, subcategoriasData, productosData, usuariosData, pedidosData, facturasData, comentariosData });
       
       const pedidosPendientes = Array.isArray(pedidosData) 
         ? pedidosData.filter(p => p.estado === 'pendiente').length 
@@ -55,8 +128,8 @@ const AdminDashboardPage = () => {
         categorias: Array.isArray(categoriasData) ? categoriasData.length : 0,
         subcategorias: Array.isArray(subcategoriasData) ? subcategoriasData.length : 0,
         productos: Array.isArray(productosData) ? productosData.length : 0,
-        usuarios: usuariosData.length || 0,
-        pedidos: pedidosData.length || 0,
+        usuarios: Array.isArray(usuariosData) ? usuariosData.length : 0,
+        pedidos: Array.isArray(pedidosData) ? pedidosData.length : 0,
         pedidosPendientes: pedidosPendientes,
         facturas: Array.isArray(facturasData) ? facturasData.length : 0,
         comentarios: Array.isArray(comentariosData) ? comentariosData.length : 0
