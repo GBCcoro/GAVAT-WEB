@@ -14,7 +14,7 @@ import LoadingSpinner from './LoadingSpinner';
 import './ProductoComentarios.css';
 
 const ProductoComentarios = ({ productoId, onComentarioCreado }) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [comentarios, setComentarios] = useState([]);
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });

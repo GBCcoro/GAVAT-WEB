@@ -5,7 +5,7 @@
  * Página de confirmación después de realizar un pedido
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Row, Col, Card, Button, Table, Alert, ListGroup } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -20,15 +20,7 @@ const PedidoConfirmadoPage = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    loadPedido();
-  }, [id, isAuthenticated, navigate]);
-
-  const loadPedido = async () => {
+  const loadPedido = useCallback(async () => {
     setLoading(true);
     try {
       const response = await pedidoService.getPedidoById(id);
@@ -44,7 +36,15 @@ const PedidoConfirmadoPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    loadPedido();
+  }, [isAuthenticated, navigate, loadPedido]);
 
   const formatearPrecio = (precio) => {
     return new Intl.NumberFormat('es-CO', {

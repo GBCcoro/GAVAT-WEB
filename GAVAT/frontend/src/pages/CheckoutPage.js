@@ -5,7 +5,7 @@
  * Página para finalizar la compra con estilos personalizados (dorados, fondos)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -28,19 +28,7 @@ const CheckoutPage = () => {
     solicitudPedido: ''
   });
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setMensaje({ 
-        tipo: 'warning', 
-        texto: 'Debes iniciar sesión para proceder al pago' 
-      });
-      setTimeout(() => navigate('/login'), 2000);
-      return;
-    }
-    loadCarrito();
-  }, [isAuthenticated, navigate]);
-
-  const loadCarrito = async () => {
+  const loadCarrito = useCallback(async () => {
     setLoading(true);
     try {
       const response = await carritoService.getCarrito();
@@ -62,7 +50,19 @@ const CheckoutPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setMensaje({ 
+        tipo: 'warning', 
+        texto: 'Debes iniciar sesión para proceder al pago' 
+      });
+      setTimeout(() => navigate('/login'), 2000);
+      return;
+    }
+    loadCarrito();
+  }, [isAuthenticated, navigate, loadCarrito]);
 
   const handleChange = (e) => {
     setFormData({

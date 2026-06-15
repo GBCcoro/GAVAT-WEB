@@ -83,7 +83,7 @@ const AdminComentariosPage = () => {
 
   useEffect(() => {
     loadComentarios();
-  }, []);
+  }, [loadComentarios]);
 
   const handleVerDetalle = (comentario) => {
     setComentarioSeleccionado(comentario);

@@ -61,15 +61,15 @@ const Footer = memo(() => {
               +57 300 123 4567
             </p>
             <div className="mt-3">
-              <a href="#" className="social-icon me-3">
+              <button type="button" className="social-icon me-3" aria-label="Facebook">
                 <i className="bi bi-facebook fs-5"></i>
-              </a>
-              <a href="#" className="social-icon me-3">
+              </button>
+              <button type="button" className="social-icon me-3" aria-label="Instagram">
                 <i className="bi bi-instagram fs-5"></i>
-              </a>
-              <a href="#" className="social-icon">
+              </button>
+              <button type="button" className="social-icon" aria-label="Twitter">
                 <i className="bi bi-twitter fs-5"></i>
-              </a>
+              </button>
             </div>
           </Col>
         </Row>

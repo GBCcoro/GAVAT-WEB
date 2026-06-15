@@ -84,7 +84,7 @@ const AdminFacturasPage = () => {
   // Cargar facturas al montar el componente
   useEffect(() => {
     loadFacturas();
-  }, []);
+  }, [loadFacturas]);
 
   const handleVerDetalle = async (factura) => {
     try {
