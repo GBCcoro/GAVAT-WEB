@@ -22,6 +22,7 @@ import CarritoPage from './pages/CarritoPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PedidoConfirmadoPage from './pages/PedidoConfirmadoPage';
 import MisPedidosPage from './pages/MisPedidosPage';
+import PerfilPage from './pages/PerfilPage';
 
 // Páginas de administración
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -55,6 +56,11 @@ function App() {
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/pedido-confirmado/:id" element={<PedidoConfirmadoPage />} />
               <Route path="/mis-pedidos" element={<MisPedidosPage />} />
+              <Route path="/perfil" element={
+                <ProtectedRoute>
+                  <PerfilPage />
+                </ProtectedRoute>
+              } />
               
               {/* Rutas de administración - PROTEGIDAS */}
               <Route path="/admin" element={
