@@ -52,7 +52,7 @@ export const formatDateTime = (dateString) => {
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return '/producto-default.jpg';
 
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://') || imagePath.startsWith('data:')) {
     return imagePath;
   }
 
